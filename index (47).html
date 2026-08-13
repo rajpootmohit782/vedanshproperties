@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedansh Properties | Premium Delhi NCR Real Estate</title>
+    
+    <!-- Preload Light Mode Image for seamless transition -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,900;1,500&family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/browser@3/tsparticles.browser.bundle.min.js"></script>
+    <!-- Supabase Library added -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        theme: {
+                            base: 'var(--color-base)',
+                            surface: 'var(--color-surface)',
+                            surface2: 'var(--color-surface-2)',
+                            border: 'var(--color-border)',
+                            text: 'var(--color-text)',
+                            muted: 'var(--color-muted)'
+                        },
+                        gold: { light: '#FDE68A', main: '#D4AF37', dark: '#B45309', banner: '#8B6914' },
+                        brand: { blue: '#0F172A', lightblue: '#3B82F6', glow: '#60A5FA' }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root[data-theme="dark"] {
+            --color-base: #030712; 
+            --color-surface: rgba(15, 23, 42, 0.6);
+            --color-surface-2: rgba(30, 41, 59, 0.8);
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-text: #F8FAFC;
+            --color-muted: #94A3B8;
+        }
+        :root[data-theme="light"] {
+            --color-base: #F8FAFC;
+            --color-surface: rgba(255, 255, 255, 0.8);
+            --color-surface-2: rgba(241, 245, 249, 0.9);
+            --color-border: rgba(15, 23, 42, 0.1);
+            --color-text: #0F172A;
+            --color-muted: #475569;
+        }
+
+        body { 
+            background-color: var(--color-base); color: var(--color-text); 
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--color-surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--color-border);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .glass-tech {
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Search & Dropdown */
+        .search-tab.active { color: #D4AF37; border-bottom: 2px solid #D4AF37; }
+        .autosuggest-dropdown {
+            display: none; position: absolute; top: 100%; left: 0; width: 100%; z-index: 50;
+            background: var(--color-surface); backdrop-filter: blur(24px); border: 1px solid var(--color-border);
+            border-radius: 0.5rem; margin-top: 0.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .search-input-wrapper:focus-within .autosuggest-dropdown { display: block; animation: slideDown 0.2s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Floating Animations for Tech Elements */
+        @keyframes float-slow { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(2deg); } }
+        @keyframes float-fast { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-3deg); } }
+        .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+        .animate-float-fast { animation: float-fast 4s ease-in-out infinite; }
+
+        /* Glowing Border Animation for IT Section */
+        .gradient-border-card { position: relative; border-radius: 1rem; background: var(--color-surface); }
+        .gradient-border-card::before {
+            content: ""; position: absolute; inset: -2px; border-radius: 1.1rem; z-index: -1;
+            background: linear-gradient(45deg, #3B82F6, #8B5CF6, #3B82F6);
+            background-size: 200% 200%; animation: gradientFlow 3s linear infinite; opacity: 0; transition: opacity 0.3s;
+        }
+        .gradient-border-card:hover::before { opacity: 1; }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Infinite Marquee */
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 35s linear infinite; display: flex; width: max-content; }
+        .marquee-mask {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+
+        /* Scrollbar & Misc */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--color-base); }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .carousel-dot { transition: all 0.3s ease; }
+        .carousel-dot.active { background-color: #D4AF37; width: 1.5rem; }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold-main selection:text-white">
+
+    <!-- FLOATING WHATSAPP -->
+    <a href="https://wa.me/919350707325" target="_blank" class="fixed bottom-6 right-6 z-50 group flex items-center justify-center">
+        <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75 duration-1000"></div>
+        <div class="relative bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:scale-110 transition-transform cursor-pointer">
+            <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </div>
+    </a>
+
+    <!-- NAV -->
+    <nav class="fixed w-full z-50 top-0 py-3 glass border-b border-theme-border transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
+            
+            <!-- NEW UPDATED LOGO (SHRUNK) -->
+            <div class="flex items-center gap-2">
+                <a href="#" class="flex flex-col items-center justify-center cursor-pointer group">
+                    <div class="w-20 sm:w-24 transition-transform group-hover:scale-105 mb-1">
+                        <svg viewBox="0 0 500 130" width="100%" height="auto">
+                            <polygon points="60,110 250,15 440,110 390,110 250,40 110,110" fill="#0000FF"/>
+                            
+                            <rect x="236" y="55" width="12" height="12" fill="#0000FF"/>
+                            <rect x="252" y="55" width="12" height="12" fill="#0000FF"/>
+                            <rect x="236" y="71" width="12" height="12" fill="#0000FF"/>
+                            <rect x="252" y="71" width="12" height="12" fill="#0000FF"/>
+                            
+                            <path d="M 120 110 
+                                     C 180 80, 240 85, 300 100 
+                                     C 360 115, 430 110, 480 80 
+                                     C 430 135, 360 135, 280 115 
+                                     C 200 95, 150 115, 120 110 Z" 
+                                  fill="#00FFFF"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <span class="text-[5px] sm:text-[6px] font-bold text-theme-text font-sans tracking-[0.15em] uppercase leading-none mb-1">Service Beyond Excellence</span>
+                        <span class="font-serif text-[13px] sm:text-[16px] font-black text-theme-text leading-none mb-1 tracking-wide">Vedansh Properties</span>
+                        <span class="text-[5px] sm:text-[6px] text-theme-muted font-sans tracking-[0.1em] uppercase leading-none">Complete Real Estate Service</span>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="hidden lg:flex space-x-8 items-center">
+                <a href="#properties" class="text-xs uppercase tracking-widest font-semibold text-theme-text hover:text-gold-main transition-colors">Properties</a>
+                <a href="#intelligence" class="text-xs uppercase tracking-widest font-semibold text-theme-text hover:text-gold-main transition-colors">Intelligence</a>
+                <a href="#it-solutions" class="text-xs uppercase tracking-widest font-semibold text-theme-text hover:text-brand-lightblue transition-colors">IT Solutions</a>
+                <a href="#tools" class="text-xs uppercase tracking-widest font-semibold text-theme-text hover:text-gold-main transition-colors">Tools</a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="w-8 h-8 rounded-full bg-theme-surface2 border border-theme-border flex items-center justify-center text-theme-text hover:text-gold-main transition-colors">
+                    <i data-lucide="sun" id="sunIcon" class="w-4 h-4 hidden"></i>
+                    <i data-lucide="moon" id="moonIcon" class="w-4 h-4"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-2 text-theme-text font-bold text-xs uppercase tracking-widest bg-theme-surface2 border border-theme-border px-4 py-2 rounded-full">
+                    <i data-lucide="phone" class="w-3 h-3 text-gold-main"></i> +91 93507 07325
+                </div>
+                <button class="lg:hidden text-theme-text"><i data-lucide="menu" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 1. HERO + STARFIELD PARTICLES + SEARCH -->
+    <section id="heroSection" class="relative pt-36 pb-24 lg:pt-44 lg:pb-32 overflow-hidden min-h-[85vh] flex items-center bg-[#0f172a] transition-colors duration-700">
+        
+        <!-- Premium Background Image & Cinematic Overlay -->
+        <div class="absolute inset-0 w-full h-full z-0">
+            <!-- Dynamic Image updated by JS -->
+            <img id="heroBgImage" src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover object-center transition-opacity duration-700" alt="Luxury Delhi NCR Real Estate">
+            <!-- Dynamic Overlay updated by JS -->
+            <div id="heroOverlay" class="absolute inset-0 bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/80 to-[#0f172a]/30 transition-colors duration-700"></div>
+        </div>
+        
+        <!-- BEAUTIFUL STARFIELD PARTICLES Container (Layer 1) -->
+        <div id="tsparticles-hero" class="absolute inset-0 w-full h-full z-[1] pointer-events-none"></div>
+
+        <!-- Floating Glass Elements in Hero (Layer 2) -->
+        <div class="absolute top-40 left-4 md:left-[10%] w-12 h-12 md:w-16 md:h-16 glass-tech rounded-2xl flex items-center justify-center animate-float-slow text-gold-main opacity-90 z-[2] shadow-2xl border-theme-border">
+            <i data-lucide="home" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </div>
+        <div class="absolute bottom-60 md:bottom-40 right-2 md:right-[15%] px-3 py-2 glass-tech rounded-lg flex items-center gap-2 animate-float-fast opacity-90 z-[2] shadow-2xl border-theme-border">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></span>
+            <span class="text-green-400 font-mono text-[9px] md:text-[10px] font-bold tracking-widest uppercase">Verified Deals</span>
+        </div>
+        <div class="absolute top-28 right-[8%] w-14 h-14 glass-tech rounded-full hidden md:flex items-center justify-center animate-float-slow text-blue-400 opacity-80 z-[2] shadow-2xl border-theme-border" style="animation-delay: 1.5s;">
+            <i data-lucide="pie-chart" class="w-6 h-6"></i>
+        </div>
+
+        <!-- Main Content (Layer 3) -->
+        <div class="relative z-[10] w-full max-w-5xl mx-auto px-4 sm:px-6 text-center">
+            <span class="inline-block py-1.5 px-4 rounded-full border border-gold-main/40 bg-theme-surface text-gold-main text-[10px] uppercase tracking-[0.3em] font-bold mb-6 backdrop-blur-md shadow-lg">
+                Delhi NCR's Premier Consultancy
+            </span>
+            <h1 class="font-serif text-4xl sm:text-5xl lg:text-7xl text-theme-text font-bold mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)] leading-[1.1] transition-colors duration-700">
+                Find the perfect <span class="text-gold-main italic">Space.</span>
+            </h1>
+            <p class="text-theme-muted text-sm sm:text-lg mb-10 max-w-2xl mx-auto drop-shadow-md font-medium transition-colors duration-700">
+                Luxury residences, high-yield commercial assets, and strategic land investments across Noida and Greater Noida.
+            </p>
+
+            <!-- Housing.com Style Omnibar -->
+            <div class="glass rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2 max-w-4xl mx-auto backdrop-blur-xl">
+                <div class="flex overflow-x-auto no-scrollbar mb-2 px-2">
+                    <button class="px-6 py-2 text-sm font-semibold text-theme-text search-tab active transition-colors" onclick="switchSearchTab(this, 'Buy')">Buy</button>
+                    <button class="px-6 py-2 text-sm font-semibold text-theme-muted hover:text-theme-text search-tab transition-colors" onclick="switchSearchTab(this, 'Rent')">Rent</button>
+                    <button class="px-6 py-2 text-sm font-semibold text-theme-muted hover:text-theme-text search-tab transition-colors" onclick="switchSearchTab(this, 'Commercial')">Commercial</button>
+                    <button class="px-6 py-2 text-sm font-semibold text-theme-muted hover:text-theme-text search-tab transition-colors" onclick="switchSearchTab(this, 'New Launch')">New Launch</button>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row gap-2">
+                    <div class="flex-1 relative search-input-wrapper">
+                        <div class="flex items-center bg-theme-surface2 border border-theme-border rounded-xl px-4 py-3 h-full backdrop-blur-md">
+                            <i data-lucide="search" class="w-5 h-5 text-gold-main mr-3"></i>
+                            <!-- Added ID and modified onkeyup -->
+                            <input type="text" id="searchInput" placeholder="Search by Locality, Sector, or Project..." class="w-full bg-transparent border-none outline-none text-theme-text text-sm font-medium placeholder:text-theme-muted transition-colors" oninput="simulateAutosuggest(this.value)" onkeydown="if(event.key === 'Enter') performSearch()">
+                        </div>
+                        
+                        <div class="autosuggest-dropdown p-2 text-left bg-theme-surface border border-theme-border">
+                            <div class="text-[10px] uppercase tracking-widest text-theme-muted font-bold px-3 pb-2 pt-1 border-b border-theme-border">Suggestions</div>
+                            <!-- Dynamic list container -->
+                            <ul class="py-1" id="autosuggestList">
+                                <li class="px-3 py-2 text-sm text-theme-muted">Type to search locations or projects...</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-48 relative flex items-center bg-theme-surface2 border border-theme-border rounded-xl px-4 py-3 backdrop-blur-md">
+                        <!-- Added ID -->
+                        <select id="propertyTypeSelect" class="w-full bg-transparent border-none outline-none text-theme-text text-sm font-medium appearance-none cursor-pointer">
+                            <option value="" class="bg-theme-base">Property Type</option>
+                            <option value="apartment" class="bg-theme-base">Apartment</option>
+                            <option value="villa" class="bg-theme-base">Villa</option>
+                            <option value="office" class="bg-theme-base">Office Space</option>
+                            <option value="plot" class="bg-theme-base">Plot / Land</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-theme-muted absolute right-4 pointer-events-none"></i>
+                    </div>
+
+                    <!-- Added onclick -->
+                    <button onclick="performSearch()" class="w-full lg:w-auto bg-gold-main hover:bg-gold-dark text-white rounded-xl px-10 py-3 font-bold text-sm tracking-wider transition-colors uppercase shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                        Search
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex flex-wrap justify-center gap-6 sm:gap-10 text-xs text-theme-text uppercase tracking-widest font-bold drop-shadow-md transition-colors">
+                <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-gold-main drop-shadow-lg"></i> Trusted Consultant</span>
+                <span class="flex items-center gap-2"><i data-lucide="map" class="w-4 h-4 text-gold-main drop-shadow-lg"></i> Delhi NCR Specialist</span>
+                <span class="flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-gold-main drop-shadow-lg"></i> Commercial Expert</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREMIUM BUILDERS MARQUEE (TRUST BANNER) -->
+    <section class="py-8 bg-theme-base border-b border-theme-border overflow-hidden relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 mb-4 text-center">
+            <h3 class="text-[10px] uppercase tracking-[0.3em] font-bold text-theme-muted">Our Trusted Developer Partners</h3>
+        </div>
+        <div class="w-full marquee-mask">
+            <div class="animate-marquee gap-12 md:gap-24 items-center font-serif text-xl md:text-3xl font-bold text-theme-text opacity-70">
+                <span>GAURS</span> <span class="text-gold-main text-sm">✦</span>
+                <span>ATS</span> <span class="text-gold-main text-sm">✦</span>
+                <span>DLF</span> <span class="text-gold-main text-sm">✦</span>
+                <span>GODREJ PROPERTIES</span> <span class="text-gold-main text-sm">✦</span>
+                <span>M3M</span> <span class="text-gold-main text-sm">✦</span>
+                <span>MAHAGUN</span> <span class="text-gold-main text-sm">✦</span>
+                <span>SUPERTECH</span> <span class="text-gold-main text-sm">✦</span>
+                <span>TATA HOUSING</span> <span class="text-gold-main text-sm">✦</span>
+                <!-- Loop -->
+                <span>GAURS</span> <span class="text-gold-main text-sm">✦</span>
+                <span>ATS</span> <span class="text-gold-main text-sm">✦</span>
+                <span>DLF</span> <span class="text-gold-main text-sm">✦</span>
+                <span>GODREJ PROPERTIES</span> <span class="text-gold-main text-sm">✦</span>
+                <span>M3M</span> <span class="text-gold-main text-sm">✦</span>
+                <span>MAHAGUN</span> <span class="text-gold-main text-sm">✦</span>
+                <span>SUPERTECH</span> <span class="text-gold-main text-sm">✦</span>
+                <span>TATA HOUSING</span> <span class="text-gold-main text-sm">✦</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOUNDER SECTION -->
+    <section class="py-16 bg-theme-base border-b border-theme-border relative z-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-12 relative overflow-hidden">
+                <div class="absolute -top-20 -left-20 w-64 h-64 bg-gold-main/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden border-4 border-gold-main/30 shadow-2xl relative bg-white/5">
+                    <img src="https://i.ibb.co/20rn6PBh/IMG-20260602-WA0000.jpg" alt="Deepak Dubey" class="w-full h-full object-cover">
+                </div>
+                
+                <div class="flex-1 text-center md:text-left">
+                    <h2 class="font-serif text-2xl md:text-4xl text-theme-text font-bold mb-1">Deepak Dubey</h2>
+                    <p class="text-gold-main text-xs uppercase tracking-widest font-bold mb-4">Founder & Managing Director</p>
+                    <p class="text-theme-muted text-sm md:text-base leading-relaxed font-serif italic mb-6">
+                        "Real estate is not about transactions; it's about securing your family's future and building generational wealth. For over two decades, I have personally guided investors and families to the right opportunities across Delhi NCR. Transparency and trust are the foundations of Vedansh."
+                    </p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                        <a href="https://wa.me/919350707325" class="flex items-center gap-2 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#25D366] hover:text-white transition-colors">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Direct WhatsApp
+                        </a>
+                        <a href="tel:+919350707325" class="flex items-center gap-2 bg-theme-surface2 text-theme-text border border-theme-border px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:border-gold-main transition-colors">
+                            <i data-lucide="phone-call" class="w-4 h-4"></i> Schedule a Call
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONNECT & REVIEWS BAR -->
+    <section class="py-8 bg-theme-surface2 border-b border-theme-border relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
+                
+                <!-- Google Reviews -->
+                <a href="https://www.google.com/search?q=vedansh+properties+and+vedansh+it+solutions+noida+reviews" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-theme-text group hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 rounded-full bg-theme-base flex items-center justify-center border border-theme-border group-hover:border-yellow-500 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.3)] transition-all">
+                        <i data-lucide="star" class="w-6 h-6 text-yellow-500 fill-yellow-500/20 group-hover:fill-yellow-500 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold group-hover:text-yellow-500 transition-colors">Rate Us on Google</span>
+                        <span class="text-[10px] text-theme-muted uppercase tracking-widest">Read our trusted reviews</span>
+                    </div>
+                </a>
+
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/1CXzo2yEKR/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-theme-text group hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 rounded-full bg-theme-base flex items-center justify-center border border-theme-border group-hover:border-blue-500 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all">
+                        <i data-lucide="facebook" class="w-6 h-6 text-blue-500 group-hover:fill-blue-500 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold group-hover:text-blue-500 transition-colors">Follow on Facebook</span>
+                        <span class="text-[10px] text-theme-muted uppercase tracking-widest">Join our active community</span>
+                    </div>
+                </a>
+
+                <!-- YouTube -->
+                <a href="https://youtube.com/@deepakdubey9717" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-theme-text group hover:-translate-y-1 transition-transform">
+                    <div class="w-12 h-12 rounded-full bg-theme-base flex items-center justify-center border border-theme-border group-hover:border-red-500 group-hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition-all">
+                        <i data-lucide="youtube" class="w-6 h-6 text-red-500 group-hover:fill-red-500 transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold group-hover:text-red-500 transition-colors">Watch on YouTube</span>
+                        <span class="text-[10px] text-theme-muted uppercase tracking-widest">Property tours & insights</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPLORE DELHI NCR & PROMO BANNER -->
+    <section class="py-20 bg-theme-base">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10">
+                <div>
+                    <h2 class="font-serif text-3xl font-bold text-theme-text">Explore Delhi NCR</h2>
+                    <p class="text-theme-muted text-sm mt-2">Discover properties by micro-markets and asset classes.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
+                <div onclick="setSearchFilter('Noida')" class="group cursor-pointer relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-theme-border shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <h3 class="text-white font-serif text-xl sm:text-2xl font-bold">Noida</h3>
+                        <p class="text-gold-main text-[10px] font-bold uppercase tracking-widest mt-1">Prime Locations</p>
+                    </div>
+                </div>
+                <div onclick="setSearchFilter('Greater Noida')" class="group cursor-pointer relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-theme-border shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <h3 class="text-white font-serif text-xl sm:text-2xl font-bold">Gr. Noida</h3>
+                        <p class="text-gold-main text-[10px] font-bold uppercase tracking-widest mt-1">Emerging Hubs</p>
+                    </div>
+                </div>
+                <div onclick="setSearchFilter('Ghaziabad')" class="group cursor-pointer relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-theme-border shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <h3 class="text-white font-serif text-xl sm:text-2xl font-bold">Ghaziabad</h3>
+                        <p class="text-gold-main text-[10px] font-bold uppercase tracking-widest mt-1">High ROI Zones</p>
+                    </div>
+                </div>
+                <div onclick="setSearchFilter('Commercial')" class="group cursor-pointer relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-theme-border shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <h3 class="text-white font-serif text-xl sm:text-2xl font-bold">Commercial</h3>
+                        <p class="text-gold-main text-[10px] font-bold uppercase tracking-widest mt-1">High Yield Assets</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full bg-gradient-to-r from-theme-surface2 to-theme-surface border border-theme-border rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between shadow-xl">
+                <div class="flex items-center gap-6 mb-6 md:mb-0">
+                    <div class="w-16 h-16 rounded-full bg-gold-main/10 flex items-center justify-center border border-gold-main/30 shrink-0">
+                        <i data-lucide="home" class="w-8 h-8 text-gold-main"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif text-2xl md:text-3xl font-bold text-theme-text mb-2">Want to sell or rent your property?</h3>
+                        <p class="text-sm text-theme-muted">List your property for free and connect with thousands of genuine buyers across NCR.</p>
+                    </div>
+                </div>
+                <button class="w-full md:w-auto bg-theme-text text-theme-base font-bold px-8 py-3.5 rounded-lg text-sm uppercase tracking-wider hover:bg-gold-main hover:text-white transition-colors shadow-lg whitespace-nowrap">
+                    Post Property Free
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOT DEALS CAROUSEL -->
+    <section id="properties" class="py-12 bg-theme-base">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="relative w-full h-80 md:h-[450px] rounded-3xl overflow-hidden border border-theme-border group mb-16 shadow-2xl">
+                <!-- Dynamically Populated Hot Deals Slider -->
+                <div id="hotDealsTrack" class="flex w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                    <div class="min-w-full h-full relative">
+                        <img src="https://images.unsplash.com/photo-1613490908578-8120e5883d6a?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
+                        <div class="absolute inset-y-0 left-0 p-8 md:p-16 flex flex-col justify-center">
+                            <span class="bg-red-500 text-white text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded inline-block w-max mb-3">Loading Deals...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="prevHotDeal()" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-gold-main transition-colors opacity-0 group-hover:opacity-100 z-10"><i data-lucide="chevron-left"></i></button>
+                <button onclick="nextHotDeal()" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-gold-main transition-colors opacity-0 group-hover:opacity-100 z-10"><i data-lucide="chevron-right"></i></button>
+                
+                <!-- Dynamically Populated Hot Deals Dots -->
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10" id="hotDealDots">
+                </div>
+            </div>
+
+            <!-- Standard Curated Listings -->
+            <div class="flex justify-between items-end mb-8 border-b border-theme-border pb-4">
+                <div>
+                    <h2 class="font-serif text-3xl font-bold text-theme-text" id="listingTitle">Curated Listings</h2>
+                    <p class="text-theme-muted text-sm mt-1" id="listingSubtitle">Recently added properties across NCR.</p>
+                </div>
+                <button onclick="clearSearch()" class="hidden sm:block text-theme-muted text-sm font-bold uppercase tracking-wider hover:text-gold-main hover:underline underline-offset-4 transition">View All / Reset</button>
+            </div>
+
+            <!-- Dynamically Populated Curated Listings Grid -->
+            <div id="curatedListingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <!-- Static Fallback / Loading State -->
+                <div class="col-span-full text-center py-10">
+                    <p class="text-theme-muted text-sm">Loading latest listings...</p>
+                </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-2 mb-16 hidden">
+                <!-- Dynamically populated buttons go here -->
+            </div>
+
+            <div class="w-full bg-gradient-to-r from-gold-banner to-gold-main rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="z-10 mb-6 md:mb-0">
+                    <span class="inline-block bg-white/20 backdrop-blur text-white px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold mb-3 border border-white/30">Financial Services</span>
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-2 leading-tight">Need a Home Loan?</h3>
+                    <p class="text-sm md:text-base text-white/90 max-w-lg">Get pre-approved in 48 hours. We partner with HDFC, SBI, and ICICI to secure the lowest interest rates for your dream home.</p>
+                </div>
+                <button class="z-10 bg-white text-gold-banner font-bold px-8 py-4 rounded-xl text-sm uppercase tracking-wider hover:bg-gray-100 transition shadow-[0_10px_30px_rgba(0,0,0,0.2)] whitespace-nowrap">
+                    Check Eligibility
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MARKET INTELLIGENCE -->
+    <section id="intelligence" class="py-20 bg-theme-surface border-y border-theme-border relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-1/3 h-full bg-gold-main/5 blur-[100px] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <div>
+                <span class="text-gold-main uppercase tracking-[0.3em] text-[10px] font-bold mb-4 block">Market Intelligence</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-theme-text font-bold mb-8">Data-Driven Investing.</h2>
+                
+                <div class="space-y-4">
+                    <div class="glass p-5 rounded-xl flex items-center justify-between hover:border-gold-main transition-colors cursor-default">
+                        <div>
+                            <h4 class="font-bold text-theme-text">Sector 62, Noida</h4>
+                            <p class="text-xs text-theme-muted">Metro proximity driving demand</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-serif text-green-500 font-bold block">↑ 11.4%</span>
+                            <span class="text-[10px] uppercase tracking-wider text-theme-muted">YoY Appreciation</span>
+                        </div>
+                    </div>
+                    <div class="glass p-5 rounded-xl flex items-center justify-between hover:border-gold-main transition-colors cursor-default">
+                        <div>
+                            <h4 class="font-bold text-theme-text">Noida Expressway</h4>
+                            <p class="text-xs text-theme-muted">Commercial IT Hub expansion</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-serif text-green-500 font-bold block">↑ 14.2%</span>
+                            <span class="text-[10px] uppercase tracking-wider text-theme-muted">YoY Appreciation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl text-center relative overflow-hidden shadow-2xl">
+                <div class="w-16 h-16 rounded-full bg-gold-main/10 border border-gold-main/30 flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-gold-main"></i>
+                </div>
+                <h3 class="font-serif text-2xl font-bold text-theme-text mb-2">AI Property Matchmaker</h3>
+                <p class="text-sm text-theme-muted mb-8">Tell us your criteria, and we'll instantly filter our active database.</p>
+                
+                <div class="space-y-4 text-left">
+                    <select class="w-full bg-theme-surface border border-theme-border text-theme-text text-sm rounded-lg px-4 py-3 outline-none focus:border-gold-main">
+                        <option>Objective: High Rental Yield</option>
+                        <option>Objective: Capital Appreciation</option>
+                    </select>
+                    <select class="w-full bg-theme-surface border border-theme-border text-theme-text text-sm rounded-lg px-4 py-3 outline-none focus:border-gold-main">
+                        <option>Location: Sector 62</option>
+                        <option>Location: Noida Expressway</option>
+                    </select>
+                    <button class="w-full bg-gold-main hover:bg-gold-dark text-white rounded-lg px-4 py-3 font-bold text-sm tracking-wider transition-colors uppercase mt-2">
+                        Find My Match
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VEDANSH IT SOLUTIONS (TECH HEAVY) -->
+    <section id="it-solutions" class="py-24 relative overflow-hidden bg-[#020617] border-y border-[#1E293B]">
+        <div id="tsparticles-it" class="absolute inset-0 z-[1] pointer-events-none"></div>
+        
+        <div class="absolute top-10 left-4 md:left-[10%] w-12 h-12 md:w-16 md:h-16 glass-tech rounded-2xl flex items-center justify-center animate-float-slow text-brand-lightblue opacity-80 z-[2]">
+            <i data-lucide="code" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </div>
+        <div class="absolute bottom-20 right-4 md:right-[15%] w-14 h-14 md:w-20 md:h-20 glass-tech rounded-full flex items-center justify-center animate-float-fast text-purple-400 opacity-70 z-[2]" style="animation-delay: 1.5s;">
+            <i data-lucide="cpu" class="w-6 h-6 md:w-8 md:h-8"></i>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-[10] text-white">
+            <div class="text-center max-w-3xl mx-auto mb-16 mt-8 md:mt-0">
+                <span class="border border-brand-lightblue/40 text-brand-lightblue bg-brand-lightblue/10 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold inline-block mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)]">Technology Division</span>
+                <h2 class="font-serif text-4xl sm:text-5xl font-bold mb-4">Digital Growth Partners.</h2>
+                <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+                    We engineer websites, CMS portals, and lead-generation funnels for real estate developers and agencies to scale their digital revenue.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 border-y border-white/10 py-10 bg-black/40 backdrop-blur-md rounded-3xl" id="counter-section">
+                <div class="text-center">
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-1"><span class="counter" data-target="50">0</span>+</h3>
+                    <p class="text-[10px] md:text-xs text-brand-lightblue uppercase tracking-widest font-bold">Websites Delivered</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-1"><span class="counter" data-target="1">0</span>M+</h3>
+                    <p class="text-[10px] md:text-xs text-brand-lightblue uppercase tracking-widest font-bold">Ad Impressions</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-1"><span class="counter" data-target="100">0</span>+</h3>
+                    <p class="text-[10px] md:text-xs text-brand-lightblue uppercase tracking-widest font-bold">Campaigns Run</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-1"><span class="counter" data-target="300">0</span>%</h3>
+                    <p class="text-[10px] md:text-xs text-brand-lightblue uppercase tracking-widest font-bold">Avg ROI Boost</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10">
+                <div class="gradient-border-card p-8 group transition-transform duration-300 hover:-translate-y-2 backdrop-blur-xl bg-white/5">
+                    <div class="w-12 h-12 bg-brand-lightblue/20 text-brand-lightblue rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="layout" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Property Portals</h3>
+                    <p class="text-sm text-gray-400 mb-4">Custom headless CMS and real estate websites designed for speed, SEO, and lead capture.</p>
+                    <span class="text-[10px] uppercase font-bold text-brand-lightblue tracking-widest">Traffic ↑</span>
+                </div>
+                <div class="gradient-border-card p-8 group transition-transform duration-300 hover:-translate-y-2 backdrop-blur-xl bg-white/5">
+                    <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="target" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Google & Meta Ads</h3>
+                    <p class="text-sm text-gray-400 mb-4">Precision-targeted PPC campaigns to capture high-intent property buyers in NCR.</p>
+                    <span class="text-[10px] uppercase font-bold text-purple-400 tracking-widest">Leads ↑</span>
+                </div>
+                <div class="gradient-border-card p-8 group transition-transform duration-300 hover:-translate-y-2 backdrop-blur-xl bg-white/5">
+                    <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center mb-6">
+                        <i data-lucide="search-check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Real Estate SEO</h3>
+                    <p class="text-sm text-gray-400 mb-4">Dominate local search terms like 'Flats in Noida' with our technical SEO strategies.</p>
+                    <span class="text-[10px] uppercase font-bold text-green-400 tracking-widest">Ranking ↑</span>
+                </div>
+            </div>
+
+            <div class="text-center relative z-10">
+                <button class="bg-brand-lightblue hover:bg-blue-600 text-white px-8 py-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+                    Schedule Tech Demo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOLS HUB -->
+    <section id="tools" class="py-20 bg-theme-base border-b border-theme-border">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <h2 class="font-serif text-3xl font-bold text-theme-text">Investor Tools Hub</h2>
+                <p class="text-theme-muted text-sm mt-2">Calculate your returns and plan your finances.</p>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-theme-border shadow-lg">
+                <div class="flex border-b border-theme-border mb-8 overflow-x-auto no-scrollbar">
+                    <button class="px-6 py-3 text-sm font-bold text-gold-main border-b-2 border-gold-main whitespace-nowrap">EMI Calculator</button>
+                    <button class="px-6 py-3 text-sm font-semibold text-theme-muted hover:text-theme-text whitespace-nowrap">Rental Yield</button>
+                    <button class="px-6 py-3 text-sm font-semibold text-theme-muted hover:text-theme-text whitespace-nowrap">ROI Calculator</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="text-xs font-bold text-theme-muted uppercase tracking-widest">Property Value (₹)</label>
+                                <span id="valDisplay" class="font-bold text-theme-text text-sm">1,50,00,000</span>
+                            </div>
+                            <input type="range" id="valRange" min="2000000" max="100000000" step="500000" value="15000000" oninput="calculateEMI()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="text-xs font-bold text-theme-muted uppercase tracking-widest">Down Payment</label>
+                                <span id="dpDisplay" class="font-bold text-theme-text text-sm">20%</span>
+                            </div>
+                            <input type="range" id="dpRange" min="10" max="90" step="5" value="20" oninput="calculateEMI()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="text-xs font-bold text-theme-muted uppercase tracking-widest">Interest Rate</label>
+                                <span id="intDisplay" class="font-bold text-theme-text text-sm">8.5%</span>
+                            </div>
+                            <input type="range" id="intRange" min="6" max="12" step="0.1" value="8.5" oninput="calculateEMI()">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="text-xs font-bold text-theme-muted uppercase tracking-widest">Tenure</label>
+                                <span id="yrDisplay" class="font-bold text-theme-text text-sm">20 Yrs</span>
+                            </div>
+                            <input type="range" id="yrRange" min="5" max="30" step="1" value="20" oninput="calculateEMI()">
+                        </div>
+                    </div>
+
+                    <div class="bg-theme-surface2 border border-theme-border rounded-2xl flex flex-col justify-center items-center p-8 text-center">
+                        <span class="text-[10px] text-theme-muted font-bold uppercase tracking-widest mb-2">Monthly EMI</span>
+                        <span id="emiResult" class="text-4xl font-serif font-bold text-gold-main mb-4">₹ 1,04,138</span>
+                        <p class="text-xs text-theme-muted">Principal + Interest</p>
+                        <button class="mt-6 border border-theme-border text-theme-text px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:border-gold-main hover:text-gold-main transition-colors">Apply For Loan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#070B14] pt-16 pb-8 text-gray-300 relative border-t border-theme-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12 border-b border-white/10 pb-12">
+                <div class="lg:col-span-2">
+                    <!-- FOOTER LOGO -->
+                    <a href="#" class="flex flex-col items-start justify-center cursor-pointer group mb-10">
+                        <div class="w-20 sm:w-24 transition-transform group-hover:scale-105 mb-1.5">
+                            <svg viewBox="0 0 500 130" width="100%" height="auto">
+                                <polygon points="60,110 250,15 440,110 390,110 250,40 110,110" fill="#0000FF"/>
+                                <rect x="236" y="55" width="12" height="12" fill="#0000FF"/>
+                                <rect x="252" y="55" width="12" height="12" fill="#0000FF"/>
+                                <rect x="236" y="71" width="12" height="12" fill="#0000FF"/>
+                                <rect x="252" y="71" width="12" height="12" fill="#0000FF"/>
+                                <path d="M 120 110 C 180 80, 240 85, 300 100 C 360 115, 430 110, 480 80 C 430 135, 360 135, 280 115 C 200 95, 150 115, 120 110 Z" fill="#00FFFF"/>
+                            </svg>
+                        </div>
+                        <div class="flex flex-col items-start text-left">
+                            <span class="text-[6px] font-bold text-white font-sans tracking-[0.15em] uppercase leading-none mb-1">Service Beyond Excellence</span>
+                            <span class="font-serif text-[16px] font-black text-white leading-none mb-1 tracking-wide">Vedansh Properties</span>
+                            <span class="text-[6px] text-gray-400 font-sans tracking-[0.1em] uppercase leading-none">Complete Real Estate Service</span>
+                        </div>
+                    </a>
+
+                    <h4 class="text-xs uppercase tracking-widest font-bold text-white mb-6 border-t border-white/10 pt-6">Meet The Founder</h4>
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="https://i.ibb.co/20rn6PBh/IMG-20260602-WA0000.jpg" class="w-12 h-12 rounded-full border border-gold-main/50 object-cover">
+                        <div>
+                            <h5 class="text-sm font-bold text-white">Deepak Dubey</h5>
+                            <p class="text-[10px] text-gold-main uppercase tracking-widest font-bold">Property Consultant | Investor Advisor</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 max-w-sm mb-4">Guiding investments across Delhi NCR with transparency, trust, and data-backed intelligence for over two decades.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm mb-4 text-white">Properties</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><a href="#" class="hover:text-gold-main transition">Noida Projects</a></li>
+                        <li><a href="#" class="hover:text-gold-main transition">Commercial Spaces</a></li>
+                        <li><a href="#" class="hover:text-gold-main transition">Luxury Villas</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm mb-4 text-white">IT Services</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><a href="#" class="hover:text-brand-lightblue transition">Website Development</a></li>
+                        <li><a href="#" class="hover:text-brand-lightblue transition">Local SEO Rankings</a></li>
+                        <li><a href="#" class="hover:text-brand-lightblue transition">Google & Meta Ads</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm mb-4 text-white">Contact</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3 h-3 text-gold-main"></i> Sector 62, Noida</li>
+                        <li class="flex items-center gap-2"><i data-lucide="phone" class="w-3 h-3 text-gold-main"></i> +91 93507 07325</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                <p>&copy; 2026 Vedansh Properties. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">RERA Guidelines</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PROPERTY MODAL -->
+    <div id="propertyModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-theme-base w-full max-w-6xl h-[90vh] rounded-2xl border border-theme-border flex flex-col overflow-hidden shadow-2xl relative scale-95 transition-transform duration-300" id="modalContent">
+            
+            <div class="flex justify-between items-center p-4 sm:p-6 border-b border-theme-border bg-theme-surface">
+                <div>
+                    <h2 class="font-serif text-xl sm:text-2xl font-bold text-theme-text" id="modalTitle">Property Name</h2>
+                    <p class="text-xs text-theme-muted flex items-center mt-1"><i data-lucide="map-pin" class="w-3 h-3 mr-1 text-gold-main"></i> <span id="modalLoc">Location</span></p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="hidden sm:block font-serif text-xl font-bold text-gold-main" id="modalPrice">₹ 0 Cr</span>
+                    <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-theme-surface2 border border-theme-border flex items-center justify-center text-theme-text hover:text-gold-main transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scroll">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="aspect-video rounded-xl overflow-hidden border border-theme-border">
+                            <img id="modalImg" src="" class="w-full h-full object-cover">
+                        </div>
+                        <div class="glass p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-4 border-b border-theme-border pb-2">Property Overview</h3>
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div><span class="block text-[10px] text-theme-muted uppercase font-bold">Type</span><span class="text-sm font-semibold" id="modalType">Residential/Comm</span></div>
+                                <div><span class="block text-[10px] text-theme-muted uppercase font-bold">Status</span><span class="text-sm font-semibold text-green-500" id="modalStatus">Available</span></div>
+                                <div><span class="block text-[10px] text-theme-muted uppercase font-bold">Location</span><span class="text-sm font-semibold" id="modalLocationOverview">NCR</span></div>
+                            </div>
+                            <p class="text-sm text-theme-muted" id="modalDesc"></p>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="glass p-6 rounded-xl border border-theme-border">
+                            <h3 class="font-bold text-lg mb-2">Interested?</h3>
+                            <p class="text-xs text-theme-muted mb-4">Fill out the form or WhatsApp us directly.</p>
+                            <input type="text" placeholder="Your Name" class="w-full bg-theme-surface2 border border-theme-border rounded-lg px-4 py-2 text-sm mb-3 outline-none text-theme-text">
+                            <input type="tel" placeholder="Phone Number" class="w-full bg-theme-surface2 border border-theme-border rounded-lg px-4 py-2 text-sm mb-4 outline-none text-theme-text">
+                            <button class="w-full bg-gold-main text-white py-2.5 rounded-lg text-sm font-bold tracking-wider hover:bg-gold-dark transition-colors mb-3">Request Callback</button>
+                            <a href="https://wa.me/919350707325" class="w-full flex items-center justify-center gap-2 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 py-2.5 rounded-lg text-sm font-bold transition-colors hover:bg-[#25D366] hover:text-white">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp Us
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Toggle & Hero Image Switcher
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const htmlElement = document.documentElement;
+        
+        const heroBgImage = document.getElementById('heroBgImage');
+        const heroOverlay = document.getElementById('heroOverlay');
+        const heroSection = document.getElementById('heroSection');
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = htmlElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            
+            if(newTheme === 'light') {
+                sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden');
+                heroBgImage.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop';
+                heroOverlay.classList.remove('from-[#0f172a]/95', 'via-[#0f172a]/80', 'to-[#0f172a]/30');
+                heroOverlay.classList.add('from-white/95', 'via-white/80', 'to-white/30');
+                heroSection.classList.remove('bg-[#0f172a]');
+                heroSection.classList.add('bg-white');
+            } else {
+                sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden');
+                heroBgImage.src = 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2000&auto=format&fit=crop';
+                heroOverlay.classList.remove('from-white/95', 'via-white/80', 'to-white/30');
+                heroOverlay.classList.add('from-[#0f172a]/95', 'via-[#0f172a]/80', 'to-[#0f172a]/30');
+                heroSection.classList.remove('bg-white');
+                heroSection.classList.add('bg-[#0f172a]');
+            }
+        });
+
+        // Search Variables & Logic
+        let currentSearchTab = 'Buy';
+        
+        function switchSearchTab(btn, tabName) {
+            document.querySelectorAll('.search-tab').forEach(t => {
+                t.classList.remove('active', 'text-theme-text');
+                t.classList.add('text-theme-muted');
+            });
+            btn.classList.remove('text-theme-muted');
+            btn.classList.add('active', 'text-theme-text');
+            currentSearchTab = tabName;
+            performSearch();
+        }
+
+        function simulateAutosuggest(query) {
+            const dropdown = document.getElementById('autosuggestList');
+            if (!query || allCuratedDeals.length === 0) {
+                dropdown.innerHTML = '<li class="px-3 py-2 text-sm text-theme-muted">Type to search locations or projects...</li>';
+                return;
+            }
+            
+            const lowerQuery = query.toLowerCase();
+            const suggestions = allCuratedDeals.filter(deal => 
+                (deal.title && deal.title.toLowerCase().includes(lowerQuery)) || 
+                (deal.location && deal.location.toLowerCase().includes(lowerQuery))
+            ).slice(0, 5); 
+
+            if (suggestions.length === 0) {
+                 dropdown.innerHTML = '<li class="px-3 py-2 text-sm text-theme-muted">No matching properties found</li>';
+                 return;
+            }
+
+            dropdown.innerHTML = suggestions.map(deal => `
+                <li class="px-3 py-2 hover:bg-theme-surface2 cursor-pointer flex items-center text-sm text-theme-text rounded transition-colors" onclick="selectSuggestion('${deal.title.replace(/'/g, "\\'")}')">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-theme-muted"></i> 
+                    <span class="truncate max-w-[200px]">${deal.title}</span>
+                    <span class="ml-auto text-xs text-theme-muted truncate max-w-[100px]">${deal.location}</span>
+                </li>
+            `).join('');
+            lucide.createIcons();
+        }
+        
+        function selectSuggestion(title) {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = title;
+            searchInput.blur(); // Hides dropdown
+            performSearch();
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const type = document.getElementById('propertyTypeSelect').value.toLowerCase();
+            
+            filteredDeals = allCuratedDeals.filter(deal => {
+                const title = (deal.title || '').toLowerCase();
+                const loc = (deal.location || '').toLowerCase();
+                const pType = (deal.property_type || '').toLowerCase();
+                const cat = (deal.category || '').toLowerCase();
+                const status = (deal.status || '').toLowerCase();
+                const badges = (deal.badges || '').toLowerCase();
+                
+                const matchQuery = !query || title.includes(query) || loc.includes(query);
+                const matchType = !type || pType.includes(type) || cat.includes(type);
+                
+                let matchTab = true;
+                if (currentSearchTab === 'Commercial') {
+                    matchTab = cat.includes('commercial') || pType.includes('commercial');
+                } else if (currentSearchTab === 'Rent') {
+                    matchTab = status.includes('rent') || cat.includes('rent');
+                } else if (currentSearchTab === 'New Launch') {
+                    matchTab = badges.includes('new') || status.includes('new');
+                }
+                
+                return matchQuery && matchType && matchTab;
+            });
+            
+            // Update Title
+            const titleEl = document.getElementById('listingTitle');
+            const subTitleEl = document.getElementById('listingSubtitle');
+            if(query || type || currentSearchTab !== 'Buy') {
+                titleEl.innerText = "Search Results";
+                subTitleEl.innerText = `Found ${filteredDeals.length} properties matching your criteria.`;
+            } else {
+                titleEl.innerText = "Curated Listings";
+                subTitleEl.innerText = "Recently added properties across NCR.";
+            }
+
+            // Scroll to listings
+            const listingsSection = document.getElementById('properties');
+            if (listingsSection) {
+                const y = listingsSection.getBoundingClientRect().top + window.scrollY - 80;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+            
+            renderCuratedListingsPage(1, false);
+        }
+
+        function setSearchFilter(locationQuery) {
+            document.getElementById('searchInput').value = locationQuery;
+            performSearch();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('propertyTypeSelect').value = '';
+            
+            document.querySelectorAll('.search-tab').forEach((t, index) => {
+                if(index === 0) {
+                    t.classList.add('active', 'text-theme-text');
+                    t.classList.remove('text-theme-muted');
+                    currentSearchTab = 'Buy';
+                } else {
+                    t.classList.remove('active', 'text-theme-text');
+                    t.classList.add('text-theme-muted');
+                }
+            });
+
+            filteredDeals = [...allCuratedDeals];
+            
+            document.getElementById('listingTitle').innerText = "Curated Listings";
+            document.getElementById('listingSubtitle').innerText = "Recently added properties across NCR.";
+            
+            renderCuratedListingsPage(1, false);
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('propertyModal');
+        const modalContent = document.getElementById('modalContent');
+        function openModal(title, price, loc, img, type = 'Residential/Comm', status = 'Available', desc = '') {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalPrice').innerText = price;
+            document.getElementById('modalLoc').innerText = loc;
+            document.getElementById('modalImg').src = img;
+            
+            document.getElementById('modalType').innerText = type;
+            document.getElementById('modalStatus').innerText = status;
+            document.getElementById('modalLocationOverview').innerText = loc.split(',')[0];
+            document.getElementById('modalDesc').innerText = desc;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // EMI Calculator
+        function formatRupees(amount) {
+            return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 15 }).format(amount);
+        }
+        function calculateEMI() {
+            const propValue = parseFloat(document.getElementById('valRange').value);
+            const dpPercent = parseFloat(document.getElementById('dpRange').value);
+            const intRate = parseFloat(document.getElementById('intRange').value);
+            const years = parseFloat(document.getElementById('yrRange').value);
+
+            document.getElementById('valDisplay').innerText = formatRupees(propValue);
+            document.getElementById('dpDisplay').innerText = dpPercent + '%';
+            document.getElementById('intDisplay').innerText = intRate + '%';
+            document.getElementById('yrDisplay').innerText = years + ' Yrs';
+
+            const principal = propValue - (propValue * (dpPercent / 100));
+            const r = (intRate / 12) / 100;
+            const n = years * 12;
+            const emi = (r === 0) ? (principal / n) : (principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1));
+
+            document.getElementById('emiResult').innerText = '₹ ' + formatRupees(Math.round(emi));
+        }
+        calculateEMI();
+
+        // Number Counters
+        const counters = document.querySelectorAll('.counter');
+        const counterSection = document.getElementById('counter-section');
+        let animated = false;
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting && !animated) {
+                animated = true;
+                counters.forEach(counter => {
+                    const updateCount = () => {
+                        const target = +counter.getAttribute('data-target');
+                        const count = +counter.innerText;
+                        const inc = target / 50; 
+                        if(count < target) {
+                            counter.innerText = Math.ceil(count + inc);
+                            setTimeout(updateCount, 40);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    };
+                    updateCount();
+                });
+            }
+        }, { threshold: 0.5 });
+        if(counterSection) counterObserver.observe(counterSection);
+
+        // ===============================================
+        // BEAUTIFUL COSMIC STARFIELD ENGINE
+        // ===============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            async function initParticles() {
+                await tsParticles.load("tsparticles-hero", {
+                    fullScreen: { enable: false }, 
+                    background: { color: "transparent" },
+                    particles: {
+                        number: { value: 250, density: { enable: true, width: 800 } }, 
+                        color: { value: ["#D4AF37", "#94A3B8", "#64748b"] },
+                        shape: { type: "circle" },
+                        opacity: { 
+                            value: { min: 0.1, max: 1 },
+                            animation: { enable: true, speed: 1, minimumValue: 0.1, sync: false } 
+                        },
+                        size: { 
+                            value: { min: 0.5, max: 2 },
+                            animation: { enable: true, speed: 2, minimumValue: 0.2, sync: false }
+                        },
+                        move: { 
+                            enable: true, 
+                            speed: 0.2, 
+                            direction: "none", 
+                            random: true, 
+                            straight: false, 
+                            outModes: "out" 
+                        }
+                    },
+                    interactivity: { events: { onHover: { enable: true, mode: "bubble" } }, modes: { bubble: { size: 3.5, opacity: 1 } } },
+                    detectRetina: true
+                });
+
+                await tsParticles.load("tsparticles-it", {
+                    fullScreen: { enable: false },
+                    background: { color: "transparent" },
+                    particles: {
+                        number: { value: 60, density: { enable: true, width: 800 } },
+                        color: { value: "#3B82F6" },
+                        links: { enable: true, color: "#3B82F6", opacity: 0.2, distance: 150 },
+                        opacity: { value: { min: 0.1, max: 0.4 } },
+                        size: { value: { min: 1, max: 2.5 } },
+                        move: { enable: true, speed: 0.6, outModes: "bounce" }
+                    },
+                    interactivity: { events: { onHover: { enable: true, mode: "grab" } }, modes: { grab: { distance: 140, links: { opacity: 0.5 } } } },
+                    detectRetina: true
+                });
+            }
+            initParticles();
+        });
+
+        // Hot Deals Carousel Logic 
+        let currentHotDeal = 0;
+        let totalHotDeals = 0; 
+        const track = document.getElementById('hotDealsTrack');
+        let autoPlayInterval;
+
+        function updateCarousel() {
+            if(!track || totalHotDeals === 0) return;
+            track.style.transform = `translateX(-${currentHotDeal * 100}%)`;
+            const currentDots = document.querySelectorAll('#hotDealDots .carousel-dot');
+            currentDots.forEach((dot, index) => {
+                if(index === currentHotDeal) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function nextHotDeal() {
+            if (totalHotDeals === 0) return;
+            currentHotDeal = (currentHotDeal + 1) % totalHotDeals;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function prevHotDeal() {
+            if (totalHotDeals === 0) return;
+            currentHotDeal = (currentHotDeal - 1 + totalHotDeals) % totalHotDeals;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function goToHotDeal(index) {
+            currentHotDeal = index;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function resetAutoPlay() {
+            clearInterval(autoPlayInterval);
+            if (totalHotDeals > 1) {
+                autoPlayInterval = setInterval(nextHotDeal, 5000); 
+            }
+        }
+
+        // ===============================================
+        // SUPABASE DYNAMIC INTEGRATION & PAGINATION
+        // ===============================================
+        let allCuratedDeals = [];
+        let filteredDeals = [];
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 9; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProperties();
+        });
+
+        async function fetchProperties() {
+            try {
+                const supabaseUrl = 'https://xjbqmxrtfpdkljmhjxxo.supabase.co';
+                const supabaseKey = 'sb_publishable_KGKpTACD69WQf_8frxCjfA_bSWWJ9ZE';
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+                const { data, error } = await supabaseClient
+                    .from('properties')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    const hotDeals = data.filter(p => p.isHotDeal);
+                    
+                    if (hotDeals.length > 0) {
+                        renderHotDeals(hotDeals);
+                    }
+                    if (data.length > 0) {
+                        allCuratedDeals = data; 
+                        filteredDeals = [...data]; // Initialize filter state
+                        renderCuratedListingsPage(1, false); 
+                    }
+                }
+
+            } catch (err) {
+                console.error("Error fetching properties from Supabase:", err);
+            }
+        }
+
+        function renderHotDeals(deals) {
+            const track = document.getElementById('hotDealsTrack');
+            const dotsContainer = document.getElementById('hotDealDots');
+            
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            totalHotDeals = deals.length;
+            currentHotDeal = 0;
+
+            deals.forEach((deal, index) => {
+                const descText = deal.description || `Explore this premium property in ${deal.location}. Contact us for details.`;
+                const safeTitle = deal.title ? deal.title.replace(/'/g, "\\'") : '';
+                const safeLoc = deal.location ? deal.location.replace(/'/g, "\\'") : '';
+                const safeType = deal.property_type ? deal.property_type.replace(/'/g, "\\'") : '';
+                const safeStatus = deal.status ? deal.status.replace(/'/g, "\\'") : '';
+                const safeDesc = descText.replace(/'/g, "\\'");
+
+                const div = document.createElement('div');
+                div.className = 'min-w-full h-full relative';
+                div.innerHTML = `
+                    <img src="${deal.imageLink}" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200'" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
+                    <div class="absolute inset-y-0 left-0 p-8 md:p-16 flex flex-col justify-center">
+                        <span class="bg-red-500 text-white text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded inline-block w-max mb-3">Hot Deal ${index + 1}/${deals.length}</span>
+                        <h2 class="text-3xl md:text-5xl font-serif font-bold text-white mb-2 leading-tight">${deal.title}</h2>
+                        <p class="text-gray-300 text-sm md:text-base mb-6 max-w-md">${descText}</p>
+                        <button onclick="openModal('${safeTitle}', '${deal.price}', '${safeLoc}', '${deal.imageLink}', '${safeType}', '${safeStatus}', '${safeDesc}')" class="bg-gold-main text-white px-8 py-3 text-xs font-bold uppercase tracking-wider rounded-lg w-max hover:bg-gold-dark transition shadow-lg">View Project</button>
+                    </div>
+                `;
+                track.appendChild(div);
+
+                const dot = document.createElement('button');
+                dot.className = `carousel-dot w-2 h-2 rounded-full bg-white/50 ${index === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToHotDeal(index);
+                dotsContainer.appendChild(dot);
+            });
+
+            resetAutoPlay();
+            lucide.createIcons();
+        }
+
+        function renderCuratedListingsPage(page, shouldScroll = false) {
+            currentPage = page;
+            const startIndex = (page - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const dealsToShow = filteredDeals.slice(startIndex, endIndex);
+
+            renderCuratedListings(dealsToShow);
+            renderPaginationControls();
+            
+            lucide.createIcons();
+            
+            if (shouldScroll) {
+                const listingsSection = document.getElementById('curatedListingsGrid');
+                if (listingsSection) {
+                    const y = listingsSection.getBoundingClientRect().top + window.scrollY - 150;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }
+        }
+
+        function renderPaginationControls() {
+            const totalPages = Math.ceil(filteredDeals.length / ITEMS_PER_PAGE);
+            const paginationContainer = document.getElementById('paginationControls');
+            
+            if (totalPages <= 1) {
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+            
+            paginationContainer.classList.remove('hidden');
+            paginationContainer.innerHTML = '';
+            
+            // Prev Button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i data-lucide="chevron-left" class="w-4 h-4"></i>';
+            prevBtn.className = `w-10 h-10 flex items-center justify-center rounded-lg border ${currentPage === 1 ? 'border-theme-border text-theme-muted cursor-not-allowed opacity-50' : 'border-theme-border text-theme-text hover:border-gold-main hover:text-gold-main transition-colors bg-theme-surface2 shadow-sm'}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => renderCuratedListingsPage(currentPage - 1, true);
+            paginationContainer.appendChild(prevBtn);
+            
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.innerText = i;
+                pageBtn.className = `w-10 h-10 flex items-center justify-center rounded-lg border text-sm font-bold transition-colors ${currentPage === i ? 'border-gold-main bg-gold-main text-white shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'border-theme-border text-theme-text hover:border-gold-main hover:text-gold-main bg-theme-surface2 shadow-sm'}`;
+                pageBtn.onclick = () => renderCuratedListingsPage(i, true);
+                paginationContainer.appendChild(pageBtn);
+            }
+            
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i data-lucide="chevron-right" class="w-4 h-4"></i>';
+            nextBtn.className = `w-10 h-10 flex items-center justify-center rounded-lg border ${currentPage === totalPages ? 'border-theme-border text-theme-muted cursor-not-allowed opacity-50' : 'border-theme-border text-theme-text hover:border-gold-main hover:text-gold-main transition-colors bg-theme-surface2 shadow-sm'}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => renderCuratedListingsPage(currentPage + 1, true);
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        function renderCuratedListings(deals) {
+            const grid = document.getElementById('curatedListingsGrid');
+            grid.innerHTML = '';
+
+            if (deals.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-theme-surface2 rounded-2xl border border-theme-border">
+                        <i data-lucide="search-x" class="w-12 h-12 text-theme-muted mx-auto mb-4"></i>
+                        <h3 class="text-xl font-bold text-theme-text mb-2">No Properties Found</h3>
+                        <p class="text-theme-muted text-sm mb-6">We couldn't find any properties matching your current search criteria.</p>
+                        <button onclick="clearSearch()" class="bg-theme-surface text-theme-text border border-theme-border px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:border-gold-main hover:text-gold-main transition-colors">Clear Filters</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            deals.forEach(deal => {
+                let badgesHtml = '';
+                const allBadges = [];
+                
+                if (deal.category) allBadges.push(deal.category);
+                if (deal.badges) {
+                    deal.badges.split(',').forEach(b => {
+                        const trimmed = b.trim();
+                        if (trimmed && !allBadges.includes(trimmed)) allBadges.push(trimmed);
+                    });
+                }
+                
+                allBadges.forEach((b, i) => {
+                    const colors = ['bg-green-600/90', 'bg-blue-600/90', 'bg-amber-500/90', 'bg-gray-800/90'];
+                    const colorClass = colors[i % colors.length];
+                    badgesHtml += `<span class="${colorClass} backdrop-blur text-white text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded">${b}</span>`;
+                });
+
+                const safeTitle = deal.title ? deal.title.replace(/'/g, "\\'") : '';
+                const safeLoc = deal.location ? deal.location.replace(/'/g, "\\'") : '';
+                const safeType = deal.property_type ? deal.property_type.replace(/'/g, "\\'") : '';
+                const safeStatus = deal.status ? deal.status.replace(/'/g, "\\'") : '';
+                const safeDesc = deal.description ? deal.description.replace(/'/g, "\\'") : '';
+
+                const div = document.createElement('div');
+                div.className = 'glass-card rounded-2xl overflow-hidden group cursor-pointer flex flex-col';
+                div.setAttribute('onclick', `openModal('${safeTitle}', '${deal.price}', '${safeLoc}', '${deal.imageLink}', '${safeType}', '${safeStatus}', '${safeDesc}')`);
+                
+                div.innerHTML = `
+                    <div class="relative h-56 overflow-hidden shrink-0">
+                        <img src="${deal.imageLink}" onerror="this.src='https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3 left-3 flex gap-2 flex-wrap">
+                            ${badgesHtml}
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-theme-text text-lg line-clamp-1">${deal.title}</h3>
+                            <i data-lucide="heart" class="w-5 h-5 text-theme-muted hover:text-red-500 transition-colors shrink-0 ml-2"></i>
+                        </div>
+                        <p class="text-theme-muted text-xs flex items-center mb-4 mt-auto"><i data-lucide="map-pin" class="w-3 h-3 mr-1 text-gold-main shrink-0"></i> <span class="line-clamp-1">${deal.location}</span></p>
+                        
+                        <div class="flex justify-between items-end border-b border-theme-border pb-4 mb-4">
+                            <div><span class="block text-2xl font-bold text-theme-text">${deal.price}</span></div>
+                            <div class="text-right">
+                                <span class="block text-sm font-semibold text-theme-text">${deal.configuration || deal.property_type || '-'}</span>
+                                <span class="text-[10px] text-theme-muted">${deal.size_yield || '-'}</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-theme-surface2 text-theme-text py-2.5 rounded-lg text-xs uppercase tracking-widest font-bold border border-theme-border group-hover:border-gold-main transition-colors">View Details</button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+    </script>
+</body>
+</html>
